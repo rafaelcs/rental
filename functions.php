@@ -1380,29 +1380,50 @@ function homey_usr_custom_column_value($val, $column_name, $user_id)
 
 //homey_verify_user_manually
 add_action('wp_ajax_homey_verify_user_manually', 'homey_verify_user_manually');
-function homey_verify_user_manually()
-{
+if( ! function_exists('homey_verify_user_manually') ) {
+    function homey_verify_user_manually() {
 
-    $notification_data = array(
-        'success' => false,
-        'user_id' => $_POST['user_id'],
-        'text' => esc_html__('Something wrong! try again, You have rights?', 'homey')
-    );
-
-    if (isset($_POST['user_id'])) {
-        if (homey_is_admin()) {
-            update_user_meta($_POST['user_id'], 'verification_id', '');
-            update_user_meta($_POST['user_id'], 'is_email_verified', 1);
-
-            $notification_data = array(
-                'success' => true,
-                'text' => esc_html__('Verified', 'homey')
-            );
+        // Check if current user has admin rights
+        if ( ! current_user_can( 'manage_options' ) ) {
+            echo json_encode( array(
+                'success' => false,
+                'reason'  => esc_html__('Not authorized!', 'homey')
+            ));
+            wp_die();
         }
-    }
+        
+        $nonce = $_REQUEST['security'];
 
-    echo json_encode($notification_data);
-    wp_die();
+        if ( ! wp_verify_nonce( $nonce, 'manually_user_approve_nonce' ) ) {
+            echo json_encode( array(
+                'success' => false,
+                'reason'  => esc_html__('Security check failed!', 'homey')
+            ));
+            wp_die();
+        }
+
+        $notification_data = array(
+            'success' => false,
+            'user_id' => $_POST['user_id'],
+            'text'    => esc_html__('Something went wrong! Try again.', 'homey')
+        );
+
+        if ( isset( $_POST['user_id'] ) ) {
+            // Optionally, you can also use your custom homey_is_admin() check if needed.
+            if ( homey_is_admin() ) {
+                update_user_meta( $_POST['user_id'], 'verification_id', '' );
+                update_user_meta( $_POST['user_id'], 'is_email_verified', 1 );
+
+                $notification_data = array(
+                    'success' => true,
+                    'text'    => esc_html__('Verified', 'homey')
+                );
+            }
+        }
+
+        echo json_encode( $notification_data );
+        wp_die();
+    }
 }
 
 //homey_verify_user_manually

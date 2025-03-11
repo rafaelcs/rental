@@ -1841,7 +1841,7 @@
             data = {
                 'action': 'homey_verify_user_manually',
                 'user_id': initiator.data('userId'),
-                'hash': initiator.data('hash')
+                'security': initiator.data('nonce')
             };
         jQuery.ajax({
             url: ajaxurl,
@@ -1851,7 +1851,11 @@
                 initiator.text('...');
             },
             success: function (response) {
-                initiator.text('Verified');
+                if(response.success) {
+                    initiator.text('Verified');
+                } else {
+                    initiator.text(response.reason);
+                }
             },
             error: function (response) {
                 initiator.text('Something wrong! Try again.');

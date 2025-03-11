@@ -117,7 +117,7 @@ $users_count = count_users();
                                                             echo '<span class="label label-success">'.esc_html__('VERIFIED', 'homey').'</span>';
                                                         } else {
                                                              echo '<span class="label label-warning">'.esc_html__('PENDING', 'homey').'</span>';
-                                                             echo '<br><span style="cursor:pointer;" class="label label-success admin_verify_user_code_manually" data-user-id="'.$user_id.'" data-hash="12345">'.esc_html__('Click to verify', 'homey').'</span>';
+                                                             echo '<br><span style="cursor:pointer;" class="label label-success admin_verify_user_code_manually" data-user-id="'.$user_id.'" data-nonce="'.wp_create_nonce('manually_user_approve_nonce').'">'.esc_html__('Click to verify', 'homey').'</span>';
 
                                                         }
                                                         ?>

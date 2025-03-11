@@ -72,7 +72,7 @@ function homey_register_required_plugins() {
 			'slug'     				=> 'homey-login-register',
 			'source'   				=> 'https://gethomey.io/plugins/homey-login-register.zip', 
 			'required' 				=> true, 
-			'version' 				=> '2.4.3',
+			'version' 				=> '2.4.4',
 			'external_url' 			=> '',
 		),
 		array(

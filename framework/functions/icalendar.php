@@ -220,18 +220,22 @@ if (!function_exists('homey_generate_ical_event')) {
         } else {
             $summary = $host.' '.$note;
         }
+
         $timezone = new DateTimeZone('UTC');
         $timezone = isset($timezone->timezone) ? $timezone->timezone : 'UTC';
+
+        $check_in_start = date("Ymd\THis\Z", strtotime($check_in_start . " 00:00:00"));
+        $check_out_end = date("Ymd\THis\Z", strtotime($check_out_end . " 00:00:00"));
 
         $ical_event = '';
         $ical_event .= "BEGIN:VEVENT".$eol;
 
-//        $ical_event .= "DTSTART;TZID=$timezone:" . $check_in_start . $eol;
-//        $ical_event .= "DTEND;TZID=$timezone:" . $check_out_end . $eol;
+        $ical_event .= "DTSTART;TZID=$timezone:" . $check_in_start . $eol;
+        $ical_event .= "DTEND;TZID=$timezone:" . $check_out_end . $eol;
 
-        $ical_event .= "DTSTART;VALUE=DATE:" . $check_in_start . $eol;
-        $ical_event .= "DTEND;VALUE=DATE:" . $check_out_end . $eol;
-
+        //This is not standard way
+        //$ical_event .= "DTSTART;VALUE=DATE:" . $check_in_start . $eol;
+        //$ical_event .= "DTEND;VALUE=DATE:" . $check_out_end . $eol;
 
         $ical_event .= "DTSTAMP:" . date('Ymd\THis') . $eol;
         $ical_event .= "UID:" . $UID . "\n";

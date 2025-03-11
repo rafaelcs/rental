@@ -5,7 +5,7 @@
 /*-----------------------------------------------------------------------------------*/
 // Social Logins
 /*-----------------------------------------------------------------------------------*/
-if( isset($_GET['verification_id']) ){
+if( isset($_GET['verification_id']) && !empty($_GET['verification_id']) ){
     $args = array(
         'meta_query' => array(
             array(

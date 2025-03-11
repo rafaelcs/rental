@@ -5553,7 +5553,7 @@ if (!function_exists('homey_get_monthly_prices')) {
                 }
             }
 
-            $taxable_amount = $total_price + $total_guests_price;
+            $taxable_amount = (float) $total_price + (float)  $total_guests_price;
             $taxes_final = homey_calculate_taxes($taxes_percent, $taxable_amount);
             $total_price = $total_price + $taxes_final;
         }
@@ -5568,7 +5568,7 @@ if (!function_exists('homey_get_monthly_prices')) {
             $total_price = $total_price + $services_fee_final;
         }
 
-        $total_guests_with_additional = $guests + $additional_guests;
+        $total_guests_with_additional = (float) $guests + (float) $additional_guests;
 
         if ($city_fee_type == 'daily') {
             $city_fee = $city_fee * $total_months_count_for_price;
@@ -5899,7 +5899,7 @@ if (!function_exists('homey_get_day_date_prices')) {
             $total_price = $total_price + $services_fee_final;
         }
 
-        $total_guests_with_additional = $guests + $additional_guests;
+        $total_guests_with_additional = (float) $guests + (float) $additional_guests;
 
         if ($city_fee_type == 'daily') {
             $city_fee = $city_fee * $days_count;

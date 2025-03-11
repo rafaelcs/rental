@@ -2576,41 +2576,44 @@ jQuery(document).ready( function($) {
         /*--------------------------------------------------------------------------
          *  Save listing as draft
          * -------------------------------------------------------------------------*/
-        $( "#save_as_draft" ).click(function() {
-            var $form = $('#submit_listing_form');
-            var save_as_draft = $('#save_as_draft');
-            var description = '';
+        $("#save_as_draft").click(function () {
+            var $form = $("#submit_listing_form");
+            var save_as_draft = $("#save_as_draft");
+            var data = $form.serialize() + "&action=save_as_draft";
 
-            if(tinyMCE.get('description') !== null){
-                description = tinyMCE.get('description').getContent();
-            }
+            // Loop through all TinyMCE editors and append their content
+            tinymce.editors.forEach(function (editor) {
+                var editorContent = editor.getContent();
+                data += "&" + encodeURIComponent(editor.id) + "=" + encodeURIComponent(editorContent);
+            });
 
-            $('input[name=action]').remove();
+            $("input[name=action]").remove();
 
             $.ajax({
-                type: 'post',
+                type: "post",
                 url: ajaxurl,
-                dataType: 'json',
-                data: $form.serialize() + "&action=save_as_draft&description="+description,
+                dataType: "json",
+                data: data,
                 beforeSend: function () {
-                    save_as_draft.children('i').remove();
-                    save_as_draft.prepend('<i class=" '+process_loader_spinner+'"></i>');
+                    save_as_draft.children("i").remove();
+                    save_as_draft.prepend('<i class=" ' + process_loader_spinner + '"></i>');
                 },
-                success: function( response ) {
-                    if( response.success ) {
-                        save_as_draft.children('i').removeClass(process_loader_spinner);
-                        save_as_draft.children('i').addClass(success_icon);
-                        $('input[name=draft_listing_id]').remove();
-                        $('input[name=action]').val('homey_add_listing');
-                        $('#submit_listing_form').prepend('<input type="hidden" name="draft_listing_id" value="'+response.listing_id+'">');
+                success: function (response) {
+                    if (response.success) {
+                        save_as_draft.children("i").removeClass(process_loader_spinner);
+                        save_as_draft.children("i").addClass(success_icon);
+                        $("input[name=draft_listing_id]").remove();
+                        $("input[name=action]").val("homey_add_listing");
+                        $("#submit_listing_form").prepend('<input type="hidden" name="draft_listing_id" value="' + response.listing_id + '">');
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     var err = eval("(" + xhr.responseText + ")");
                     console.log(err.Message);
                 }
-            })
+            });
         });
+
 
         /*--------------------------------------------------------------------------
          *  Local paymnet

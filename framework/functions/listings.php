@@ -1723,7 +1723,7 @@ if (!function_exists('save_listing_as_draft')) {
 
         // Title
         if (isset($_POST['listing_title'])) {
-            $new_listing['post_title'] = sanitize_text_field($_POST['listing_title']);
+            $new_listing['post_title'] = empty(sanitize_text_field($_POST['listing_title'])) ? 'Draft Listing Title' : sanitize_text_field($_POST['listing_title']);
         }
 
         // Description
@@ -1768,7 +1768,8 @@ if (!function_exists('save_listing_as_draft')) {
 
                         }
 
-                    endforeach; endif;
+                    endforeach;
+                    endif;
             }
 
             $listing_total_rating = get_post_meta($listing_id, 'listing_total_rating', true);

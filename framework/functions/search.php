@@ -650,42 +650,26 @@ if(!function_exists('check_listing_availability_for_search')) {
 
 if(!function_exists('check_listing_availability_for_search_optimized')) {
     function check_listing_availability_for_search_optimized($check_in_date, $check_out_date) {
-        $return_array = array();
-        $local = homey_get_localization();
-        $args = array(
-            'post_type'  => 'listing', // Replace with your custom post type (e.g., 'reservation')
-            'meta_key'   => 'reservation_dates', // The meta key you're looking for
-            'meta_query' => array(
-                array(
-                    'key'     => 'reservation_dates',
-                    'compare' => 'EXISTS' // Only return posts where the meta key exists
-                ),
-            ),
-            'posts_per_page' => -1, // Retrieve all posts
-        );
-
-        $query = new WP_Query($args);
-
         $available_ids_optimized = get_all_listing_ids();
 
-        if ($query->have_posts()) {
-            while ($query->have_posts()) {
-                $check_in      = new DateTime($check_in_date);
+        $posts = get_posts(array('post_type' => 'listing', 'posts_per_page' => -1));
+        foreach ($posts as $post) {
+            $meta = get_post_meta($post->ID);
+            if( isset($meta['reservation_dates']) || isset($meta['reservation_pending_dates']) || isset($meta['reservation_unavailable'])){
+            $check_in      = new DateTime($check_in_date);
                 $check_in_unix = $check_in->getTimestamp();
 
                 $check_out     = new DateTime($check_out_date);
                 $check_out->modify('yesterday');
                 $check_out_unix = $check_out->getTimestamp();
 
-                $query->the_post();
-
-                $reservation_booked_array = get_post_meta(get_the_ID(), 'reservation_dates', true);
+                $reservation_booked_array = get_post_meta($post->ID, 'reservation_dates', true);
                 $reservation_booked_array = is_array($reservation_booked_array) ? $reservation_booked_array : [];
 
-                $reservation_pending_array = get_post_meta(get_the_ID(), 'reservation_pending_dates', true);
+                $reservation_pending_array = get_post_meta($post->ID, 'reservation_pending_dates', true);
                 $reservation_pending_array = is_array($reservation_pending_array) ? $reservation_pending_array : [];
 
-                $reservation_unavailable_array = get_post_meta(get_the_ID(), 'reservation_unavailable', true);
+                $reservation_unavailable_array = get_post_meta($post->ID, 'reservation_unavailable', true);
                 $reservation_unavailable_array = is_array($reservation_unavailable_array) ? $reservation_unavailable_array : [];
 
                 while ($check_in_unix <= $check_out_unix) {
@@ -694,13 +678,13 @@ if(!function_exists('check_listing_availability_for_search_optimized')) {
                         || array_key_exists($check_in_unix, $reservation_pending_array)
                         || array_key_exists($check_in_unix, $reservation_unavailable_array)
                     ) {
-                        $numberToRemove = get_the_ID();
+                        $numberToRemove = $post->ID;
 
                         $available_ids_optimized = array_filter($available_ids_optimized, function($value) use ($numberToRemove) {
                             return $value != $numberToRemove;
                         });
 
-                        break;
+                        //break;
                     }
                     $check_in->modify('tomorrow');
                     $check_in_unix =   $check_in->getTimestamp();
